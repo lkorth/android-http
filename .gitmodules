@@ -1,0 +1,3 @@
+[submodule "HttpResponseCache"]
+	path = HttpResponseCache
+	url = https://github.com/candrews/HttpResponseCache.git
