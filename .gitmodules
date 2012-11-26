@@ -1,3 +1,6 @@
 [submodule "HttpResponseCache"]
 	path = HttpResponseCache
 	url = https://github.com/candrews/HttpResponseCache.git
+[submodule "DiskLruCache"]
+	path = DiskLruCache
+	url = https://github.com/JakeWharton/DiskLruCache.git
