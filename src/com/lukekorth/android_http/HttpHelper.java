@@ -28,6 +28,9 @@ import java.util.List;
 
 public class HttpHelper {
 
+    public static final int NO_CACHE = 0;
+    public static final int VALIDATE_CACHE = 1;
+
     private static final String TAG = "android-http";
     private boolean DEBUG_HTTP;
 
@@ -79,7 +82,7 @@ public class HttpHelper {
         readTimeout = seconds * 1000;
     }
 
-    public String get(String url) {
+    public String get(String url, int cache) {
         HttpURLConnection urlConnection = null;
         String response = null;
         try {
@@ -87,6 +90,12 @@ public class HttpHelper {
 
             urlConnection.setConnectTimeout(connectTimeout);
             urlConnection.setReadTimeout(readTimeout);
+
+            if (cache == NO_CACHE) {
+                urlConnection.addRequestProperty("Cache-Control", "no-cache");
+            } else if (cache == VALIDATE_CACHE) {
+                urlConnection.addRequestProperty("Cache-Control", "max-age=0");
+            }
 
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             response = readStream(in);
@@ -114,7 +123,11 @@ public class HttpHelper {
         return response;
     }
 
-    public String get(String url, List<NameValuePair> nameValuePairs) {
+    public String get(String url) {
+        return get(url, -1);
+    }
+
+    public String get(String url, List<NameValuePair> nameValuePairs, int cache) {
         url = url + "?" + getParameters(nameValuePairs);
 
         if (DEBUG_HTTP) {
@@ -122,29 +135,42 @@ public class HttpHelper {
             Log.d(TAG, "query string: " + nameValuePairs.toString());
         }
 
-        return get(url);
+        return get(url, cache);
+    }
+
+    public String get(String url, List<NameValuePair> nameValuePairs) {
+        return get(url, nameValuePairs, -1);
     }
 
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
+    public <T> T get(String url, Class type, int cache) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(get(url, cache), type);
+    }
+
+    @SuppressWarnings("rawtypes")
     public <T> T get(String url, Class type) {
-        if (gson == null) {
-            gson = new Gson();
-        }
-
-        return (T) gson.fromJson(get(url), type);
+        return get(url, type, -1);
     }
 
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
-    public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type) {
+    public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type, int cache) {
         if (gson == null) {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(get(url, nameValuePairs), type);
+        return (T) gson.fromJson(get(url, nameValuePairs, cache), type);
+    }
+
+    public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type) {
+        return get(url, nameValuePairs, type, -1);
     }
 
     public String post(String url, List<NameValuePair> nameValuePairs) {
