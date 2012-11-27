@@ -237,6 +237,8 @@ public class HttpHelper {
             urlConnection.setConnectTimeout(connectTimeout);
             urlConnection.setReadTimeout(readTimeout);
 
+            urlConnection.addRequestProperty("Cache-Control", "no-cache");
+
             urlConnection.setDoOutput(true);
             urlConnection.setChunkedStreamingMode(0);
             urlConnection.setRequestMethod("POST");
