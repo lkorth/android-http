@@ -26,10 +26,10 @@ import java.util.List;
 public class HttpHelper {
 
     private static final String TAG = "android-http";
-
-    private static Gson gson = null;
-    private Context mContext;
     private boolean DEBUG_HTTP;
+
+    private Context mContext;
+    private static Gson gson = null;
     private int connectTimeout = 10 * 1000; // 10 seconds in milliseconds
     private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
 
@@ -50,7 +50,7 @@ public class HttpHelper {
             HttpResponseCache.install(new File(context.getCacheDir(), "http"), size);
         } catch (IOException e) {
             if (DEBUG_HTTP)
-                Log.w(TAG, "IOException when getting cache dir");
+                Log.w(TAG, "IOException occured while getting cache dir");
         }
     }
 
