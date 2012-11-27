@@ -1,4 +1,6 @@
+
 package com.lukekorth.android_http;
+
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -8,8 +10,18 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.integralblue.httpresponsecache.HttpResponseCache;
 
+import org.apache.http.NameValuePair;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
 
 public class HttpHelper {
 
@@ -47,6 +59,108 @@ public class HttpHelper {
         return gson;
     }
 
+    public String get(String url) {
+        HttpURLConnection urlConnection = null;
+        String response = null;
+        try {
+            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+
+            urlConnection.setConnectTimeout(connectTimeout);
+            urlConnection.setReadTimeout(readTimeout);
+
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            response = readStream(in);
+
+            if (DEBUG_HTTP) {
+                Log.d(TAG, "response code: " + urlConnection.getResponseCode());
+                Log.d(TAG, "response payload: " + response);
+            }
+        } catch (MalformedURLException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "MalformedURLException occured while parsing url");
+        } catch (IOException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG,
+                        "IOException occured while trying to open connection or getting input stream. "
+                                + e.getMessage());
+        } finally {
+            urlConnection.disconnect();
+        }
+
+        return response;
+    }
+
+    public String get(String url, List<NameValuePair> nameValuePairs) {
+        url += "?";
+
+        for (NameValuePair pair : nameValuePairs) {
+            url += pair.getName() + "=" + pair.getValue() + "&";
+        }
+
+        url = url.substring(0, url.length() - 1);
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "url: " + url);
+            Log.d(TAG, "query string: " + nameValuePairs.toString());
+        }
+
+        return get(url);
+    }
+
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    public <T> T get(String url, Class type) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(get(url), type);
+    }
+
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(get(url, nameValuePairs), type);
+    }
+
+    public String post() {
+
+    }
+
+    private String readStream(InputStream in) {
+        InputStreamReader is = new InputStreamReader(in);
+        BufferedReader br = new BufferedReader(is);
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            String read = br.readLine();
+
+            while (read != null) {
+                sb.append(read);
+                read = br.readLine();
+            }
+        } catch (IOException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "IOException occured while reading response from server");
+        }
+
+        try {
+            in.close();
+            is.close();
+            br.close();
+        } catch (IOException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "IOException occured while closing streams");
+        }
+
+        return sb.toString();
+    }
 
     // http://izvornikod.com/Blog/tabid/82/EntryId/13/How-to-check-if-your-android-application-is-running-in-debug-or-release-mode.aspx
     private boolean IsDebug() {
