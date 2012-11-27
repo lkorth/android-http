@@ -16,6 +16,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -172,6 +173,48 @@ public class HttpHelper {
         }
 
         return (T) gson.fromJson(get(url, nameValuePairs, cache), type);
+    }
+
+    public String getCached(String url) {
+        HttpURLConnection urlConnection = null;
+        String response = null;
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "url: " + url);
+        }
+
+        try {
+            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+            urlConnection.addRequestProperty("Cache-Control", "only-if-cached");
+
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            response = readStream(in);
+        } catch (FileNotFoundException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "The requested resource was not cached");
+
+            response = null;
+        } catch (IOException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG,
+                        "IOException occured while trying to open connection or getting input stream. "
+                                + e);
+        } finally {
+            urlConnection.disconnect();
+        }
+
+        return response;
+    }
+
+    public String getCached(String url, List<NameValuePair> nameValuePairs) {
+        url = url + "?" + getParameters(nameValuePairs);
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "Attempting to load directly from cache, return null if not cached");
+            Log.d(TAG, "query string: " + nameValuePairs.toString());
+        }
+
+        return getCached(url);
     }
 
     public String post(String url, List<NameValuePair> nameValuePairs) {
