@@ -57,6 +57,16 @@ public class HttpHelper {
         }
     }
 
+    public void close() {
+        HttpResponseCache cache = HttpResponseCache.getInstalled();
+        if (cache != null) {
+            cache.flush();
+        }
+
+        mContext = null;
+        gson = null;
+    }
+
     public static Gson getGson() {
         if (gson == null)
             gson = new Gson();
