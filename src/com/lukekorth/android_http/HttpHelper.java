@@ -92,13 +92,14 @@ public class HttpHelper {
             if (DEBUG_HTTP)
                 Log.w(TAG, "MalformedURLException occured while parsing url");
         } catch (IOException e) {
-            if (DEBUG_HTTP)
+            if (DEBUG_HTTP) {
                 response = readStream(urlConnection.getErrorStream());
-            Log.d(TAG, "error response: " + response);
+                Log.d(TAG, "error response: " + response);
 
-            Log.w(TAG,
-                    "IOException occured while trying to open connection or getting input stream. "
-                            + e.getMessage());
+                Log.w(TAG,
+                        "IOException occured while trying to open connection or getting input stream. "
+                                + e.getMessage());
+            }
         } finally {
             urlConnection.disconnect();
         }
