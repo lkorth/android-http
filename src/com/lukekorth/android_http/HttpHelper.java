@@ -53,7 +53,7 @@ public class HttpHelper {
             HttpResponseCache.install(new File(context.getCacheDir(), "http"), size);
         } catch (IOException e) {
             if (DEBUG_HTTP)
-                Log.w(TAG, "IOException occured while getting cache dir");
+                Log.w(TAG, "IOException occured while getting cache dir " + e);
         }
     }
 
@@ -90,7 +90,7 @@ public class HttpHelper {
             }
         } catch (MalformedURLException e) {
             if (DEBUG_HTTP)
-                Log.w(TAG, "MalformedURLException occured while parsing url");
+                Log.w(TAG, "MalformedURLException occured while parsing url " + e);
         } catch (IOException e) {
             if (DEBUG_HTTP) {
                 response = readStream(urlConnection.getErrorStream());
@@ -98,7 +98,7 @@ public class HttpHelper {
 
                 Log.w(TAG,
                         "IOException occured while trying to open connection or getting input stream. "
-                                + e.getMessage());
+                                + e);
             }
         } finally {
             urlConnection.disconnect();
@@ -171,7 +171,7 @@ public class HttpHelper {
             }
         } catch (MalformedURLException e) {
             if (DEBUG_HTTP)
-                Log.w(TAG, "MalformedURLException occured while parsing url");
+                Log.w(TAG, "MalformedURLException occured while parsing url " + e);
         } catch (IOException e) {
             if (DEBUG_HTTP) {
                 response = readStream(urlConnection.getErrorStream());
@@ -179,7 +179,7 @@ public class HttpHelper {
 
                 Log.w(TAG,
                         "IOException occured while trying to open connection or getting input stream. "
-                                + e.getMessage());
+                                + e);
             }
         } finally {
             urlConnection.disconnect();
@@ -208,7 +208,7 @@ public class HttpHelper {
                         + "&";
             } catch (UnsupportedEncodingException e) {
                 if (DEBUG_HTTP)
-                    Log.w(TAG, "UnsupportedEncodingException while url encoding parameters");
+                    Log.w(TAG, "UnsupportedEncodingException while url encoding parameters " + e);
             }
         }
 
@@ -229,7 +229,7 @@ public class HttpHelper {
             }
         } catch (IOException e) {
             if (DEBUG_HTTP)
-                Log.w(TAG, "IOException occured while reading response from server");
+                Log.w(TAG, "IOException occured while reading response from server " + e);
         }
 
         try {
@@ -238,7 +238,7 @@ public class HttpHelper {
             br.close();
         } catch (IOException e) {
             if (DEBUG_HTTP)
-                Log.w(TAG, "IOException occured while closing streams");
+                Log.w(TAG, "IOException occured while closing streams " + e);
         }
 
         return sb.toString();
@@ -254,6 +254,7 @@ public class HttpHelper {
             debuggable = (0 != (appinfo.flags &= ApplicationInfo.FLAG_DEBUGGABLE));
         } catch (NameNotFoundException e) {
             /* debuggable variable will remain false */
+            Log.w(TAG, "NameNotFoundException, DEBUG_HTTP will remain false  " + e);
         }
 
         return debuggable;
