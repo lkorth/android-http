@@ -108,18 +108,7 @@ public class HttpHelper {
     }
 
     public String get(String url, List<NameValuePair> nameValuePairs) {
-        url += "?";
-
-        for (NameValuePair pair : nameValuePairs) {
-            try {
-                url += pair.getName() + "=" + URLEncoder.encode(pair.getValue(), "UTF-8") + "&";
-            } catch (UnsupportedEncodingException e) {
-                if (DEBUG_HTTP)
-                    Log.w(TAG, "UnsupportedEncodingException while url encoding query string");
-            }
-        }
-
-        url = url.substring(0, url.length() - 1);
+        url = url + "?" + getParameters(nameValuePairs);
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "url: " + url);
@@ -208,7 +197,22 @@ public class HttpHelper {
         }
 
         return (T) gson.fromJson(post(url, nameValuePairs), type);
+    }
 
+    private String getParameters(List<NameValuePair> nameValuePairs) {
+        String parameters = "";
+
+        for (NameValuePair pair : nameValuePairs) {
+            try {
+                parameters += pair.getName() + "=" + URLEncoder.encode(pair.getValue(), "UTF-8")
+                        + "&";
+            } catch (UnsupportedEncodingException e) {
+                if (DEBUG_HTTP)
+                    Log.w(TAG, "UnsupportedEncodingException while url encoding parameters");
+            }
+        }
+
+        return parameters.substring(0, parameters.length() - 1);
     }
 
     private String readStream(InputStream in) {
