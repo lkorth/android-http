@@ -169,6 +169,7 @@ public class HttpHelper {
         return (T) gson.fromJson(get(url, nameValuePairs, cache), type);
     }
 
+    @SuppressWarnings("rawtypes")
     public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type) {
         return get(url, nameValuePairs, type, -1);
     }
