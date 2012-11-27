@@ -14,6 +14,7 @@ import org.apache.http.NameValuePair;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -149,7 +150,63 @@ public class HttpHelper {
         return (T) gson.fromJson(get(url, nameValuePairs), type);
     }
 
-    public String post() {
+    public String post(String url, List<NameValuePair> nameValuePairs) {
+        HttpURLConnection urlConnection = null;
+        String response = null;
+        String urlParameters = getParameters(nameValuePairs);
+        try {
+            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+
+            urlConnection.setConnectTimeout(connectTimeout);
+            urlConnection.setReadTimeout(readTimeout);
+
+            urlConnection.setDoOutput(true);
+            urlConnection.setChunkedStreamingMode(0);
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            urlConnection.setRequestProperty("Content-Length",
+                    "" + Integer.toString(urlParameters.getBytes().length));
+
+            DataOutputStream os = new DataOutputStream(urlConnection.getOutputStream());
+            os.writeBytes(urlParameters);
+            os.flush();
+            os.close();
+
+            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+            response = readStream(in);
+
+            if (DEBUG_HTTP) {
+                Log.d(TAG, "response code: " + urlConnection.getResponseCode());
+                Log.d(TAG, "response payload: " + response);
+            }
+        } catch (MalformedURLException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "MalformedURLException occured while parsing url");
+        } catch (IOException e) {
+            if (DEBUG_HTTP) {
+                response = readStream(urlConnection.getErrorStream());
+                Log.d(TAG, "error response: " + response);
+
+                Log.w(TAG,
+                        "IOException occured while trying to open connection or getting input stream. "
+                                + e.getMessage());
+            }
+        } finally {
+            urlConnection.disconnect();
+        }
+
+        return response;
+    }
+
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    public <T> T post(String url, List<NameValuePair> nameValuePairs, Class type) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(post(url, nameValuePairs), type);
 
     }
 
