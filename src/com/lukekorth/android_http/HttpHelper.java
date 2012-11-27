@@ -90,6 +90,11 @@ public class HttpHelper {
     public String get(String url, int cache) {
         HttpURLConnection urlConnection = null;
         String response = null;
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "url: " + url);
+        }
+
         try {
             urlConnection = (HttpURLConnection) new URL(url).openConnection();
 
@@ -136,7 +141,6 @@ public class HttpHelper {
         url = url + "?" + getParameters(nameValuePairs);
 
         if (DEBUG_HTTP) {
-            Log.d(TAG, "url: " + url);
             Log.d(TAG, "query string: " + nameValuePairs.toString());
         }
 
@@ -221,6 +225,12 @@ public class HttpHelper {
         HttpURLConnection urlConnection = null;
         String response = null;
         String urlParameters = getParameters(nameValuePairs);
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "url: " + url);
+            Log.d(TAG, "query string: " + nameValuePairs.toString());
+        }
+
         try {
             urlConnection = (HttpURLConnection) new URL(url).openConnection();
 
