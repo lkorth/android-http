@@ -13,19 +13,30 @@ import java.io.IOException;
 
 public class HttpHelper {
 
+    private static final String TAG = "android-http";
+
     private static Gson gson = null;
     private Context mContext;
     private boolean DEBUG_HTTP;
 
     public HttpHelper(Context context) {
-        new HttpHelper(context, (long) 10 * 1024 * 1024); // 10 MiB
+        Init(context, (long) 10 * 1024 * 1024); // 10 MiB
     }
 
     public HttpHelper(Context context, long size) {
+        Init(context, size);
+    }
+
+    private void Init(Context context, long size) {
+        mContext = context;
+
+        DEBUG_HTTP = IsDebug();
+
         try {
             HttpResponseCache.install(new File(context.getCacheDir(), "http"), size);
         } catch (IOException e) {
-            Log.w("android-http", "IOException when getting cache dir");
+            if (DEBUG_HTTP)
+                Log.w(TAG, "IOException when getting cache dir");
         }
     }
 
