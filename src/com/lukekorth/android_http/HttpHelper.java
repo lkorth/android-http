@@ -18,9 +18,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.List;
 
 public class HttpHelper {
@@ -104,7 +106,12 @@ public class HttpHelper {
         url += "?";
 
         for (NameValuePair pair : nameValuePairs) {
-            url += pair.getName() + "=" + pair.getValue() + "&";
+            try {
+                url += pair.getName() + "=" + URLEncoder.encode(pair.getValue(), "UTF-8") + "&";
+            } catch (UnsupportedEncodingException e) {
+                if (DEBUG_HTTP)
+                    Log.w(TAG, "UnsupportedEncodingException while url encoding query string");
+            }
         }
 
         url = url.substring(0, url.length() - 1);
