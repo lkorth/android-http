@@ -30,6 +30,8 @@ public class HttpHelper {
     private static Gson gson = null;
     private Context mContext;
     private boolean DEBUG_HTTP;
+    private int connectTimeout = 10 * 1000; // 10 seconds in milliseconds
+    private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
 
     public HttpHelper(Context context) {
         Init(context, (long) 10 * 1024 * 1024); // 10 MiB
@@ -57,6 +59,14 @@ public class HttpHelper {
             gson = new Gson();
 
         return gson;
+    }
+
+    public void setConnectTimeout(int seconds) {
+        connectTimeout = seconds * 1000;
+    }
+
+    public void setReadTimeout(int seconds) {
+        readTimeout = seconds * 1000;
     }
 
     public String get(String url) {
