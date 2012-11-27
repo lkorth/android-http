@@ -41,7 +41,7 @@ public class HttpHelper {
     private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
 
     public HttpHelper(Context context) {
-        Init(context, (long) 10 * 1024 * 1024); // 10 MiB
+        Init(context, (long) 10); // 10 MiB
     }
 
     public HttpHelper(Context context, long size) {
@@ -54,7 +54,7 @@ public class HttpHelper {
         DEBUG_HTTP = IsDebug();
 
         try {
-            HttpResponseCache.install(new File(context.getCacheDir(), "http"), size);
+            HttpResponseCache.install(new File(context.getCacheDir(), "http"), size * 1024 * 1024);
         } catch (IOException e) {
             if (DEBUG_HTTP)
                 Log.w(TAG, "IOException occured while getting cache dir " + e);
