@@ -82,6 +82,10 @@ public class HttpHelper {
         readTimeout = seconds * 1000;
     }
 
+    public String get(String url) {
+        return get(url, -1);
+    }
+
     public String get(String url, int cache) {
         HttpURLConnection urlConnection = null;
         String response = null;
@@ -123,8 +127,8 @@ public class HttpHelper {
         return response;
     }
 
-    public String get(String url) {
-        return get(url, -1);
+    public String get(String url, List<NameValuePair> nameValuePairs) {
+        return get(url, nameValuePairs, -1);
     }
 
     public String get(String url, List<NameValuePair> nameValuePairs, int cache) {
@@ -138,8 +142,9 @@ public class HttpHelper {
         return get(url, cache);
     }
 
-    public String get(String url, List<NameValuePair> nameValuePairs) {
-        return get(url, nameValuePairs, -1);
+    @SuppressWarnings("rawtypes")
+    public <T> T get(String url, Class type) {
+        return get(url, type, -1);
     }
 
     @SuppressWarnings({
@@ -154,8 +159,8 @@ public class HttpHelper {
     }
 
     @SuppressWarnings("rawtypes")
-    public <T> T get(String url, Class type) {
-        return get(url, type, -1);
+    public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type) {
+        return get(url, nameValuePairs, type, -1);
     }
 
     @SuppressWarnings({
@@ -167,11 +172,6 @@ public class HttpHelper {
         }
 
         return (T) gson.fromJson(get(url, nameValuePairs, cache), type);
-    }
-
-    @SuppressWarnings("rawtypes")
-    public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type) {
-        return get(url, nameValuePairs, type, -1);
     }
 
     public String post(String url, List<NameValuePair> nameValuePairs) {
