@@ -33,6 +33,7 @@ public class HttpHelper {
     public static final int VALIDATE_CACHE = 1;
 
     private static final String TAG = "android-http";
+    private static final String UAS = "android-http";
     private boolean DEBUG_HTTP;
 
     private Context mContext;
@@ -100,6 +101,7 @@ public class HttpHelper {
 
             urlConnection.setConnectTimeout(connectTimeout);
             urlConnection.setReadTimeout(readTimeout);
+            urlConnection.setRequestProperty("User-Agent", UAS);
 
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
@@ -236,6 +238,7 @@ public class HttpHelper {
 
             urlConnection.setConnectTimeout(connectTimeout);
             urlConnection.setReadTimeout(readTimeout);
+            urlConnection.setRequestProperty("User-Agent", UAS);
 
             urlConnection.addRequestProperty("Cache-Control", "no-cache");
 
