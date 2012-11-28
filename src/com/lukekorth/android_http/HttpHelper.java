@@ -223,6 +223,17 @@ public class HttpHelper {
         return getCached(url);
     }
 
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
+    public <T> T getCached(String url, List<NameValuePair> nameValuePairs, Class type) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(getCached(url, nameValuePairs), type);
+    }
+
     public String post(String url, List<NameValuePair> nameValuePairs) {
         HttpURLConnection urlConnection = null;
         String response = null;
