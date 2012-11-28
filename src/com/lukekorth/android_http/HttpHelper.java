@@ -14,12 +14,12 @@ import org.apache.http.NameValuePair;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -247,29 +247,38 @@ public class HttpHelper {
         try {
             urlConnection = (HttpURLConnection) new URL(url).openConnection();
 
+            urlConnection.setDoOutput(true);
             urlConnection.setConnectTimeout(connectTimeout);
             urlConnection.setReadTimeout(readTimeout);
             urlConnection.setRequestProperty("User-Agent", UAS);
 
             urlConnection.addRequestProperty("Cache-Control", "no-cache");
 
-            urlConnection.setDoOutput(true);
-            urlConnection.setChunkedStreamingMode(0);
-            urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             urlConnection.setRequestProperty("Content-Length",
-                    "" + Integer.toString(urlParameters.getBytes().length));
+                    Integer.toString(urlParameters.getBytes().length));
 
-            DataOutputStream os = new DataOutputStream(urlConnection.getOutputStream());
-            os.writeBytes(urlParameters);
-            os.flush();
-            os.close();
+            OutputStream output = null;
+            try {
+                output = urlConnection.getOutputStream();
+                output.write(urlParameters.getBytes("UTF-8"));
+            } catch (IOException e) {
+                Log.w(TAG, "IOException occured while trying to get output stream. " + e);
+            } finally {
+                if (output != null) {
+                    try {
+                        output.close();
+                    } catch (IOException e) {
+                        Log.w(TAG, "IOException occured while trying to close output stream. " + e);
+                    }
+                }
+            }
 
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            response = readStream(in);
+            response = readStream(urlConnection.getInputStream());
 
             if (DEBUG_HTTP) {
                 Log.d(TAG, "response code: " + urlConnection.getResponseCode());
+                Log.d(TAG, "headers: " + urlConnection.getHeaderFields().toString());
                 Log.d(TAG, "response payload: " + response);
             }
         } catch (MalformedURLException e) {
