@@ -109,8 +109,7 @@ public class HttpHelper {
                 urlConnection.addRequestProperty("Cache-Control", "max-age=0");
             }
 
-            InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-            response = readStream(in);
+            response = readStream(urlConnection.getInputStream());
 
             if (DEBUG_HTTP) {
                 Log.d(TAG, "response code: " + urlConnection.getResponseCode());
