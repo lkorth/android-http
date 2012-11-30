@@ -59,13 +59,26 @@ public class HttpHelper {
         } catch (IOException e) {
             if (DEBUG_HTTP)
                 Log.w(TAG, "IOException occured while getting cache dir " + e);
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "Requests: "
+                    + HttpResponseCache.getInstalled().getRequestCount() +
+                    " Network Requests: "
+                    + HttpResponseCache.getInstalled().getNetworkCount() +
+                    " Cache served requests: "
+                    + HttpResponseCache.getInstalled().getHitCount());
         }
     }
 
     public void flush() {
+        if (DEBUG_HTTP)
+            Log.d(TAG, "Flushing cache to disk...");
+
         HttpResponseCache cache = HttpResponseCache.getInstalled();
         if (cache != null) {
             cache.flush();
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Cache was flushed to disk successfully");
         }
     }
 
