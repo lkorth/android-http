@@ -55,10 +55,13 @@ public class HttpHelper {
         DEBUG_HTTP = IsDebug();
 
         try {
-            HttpResponseCache.install(new File(context.getCacheDir(), "http"), size * 1024 * 1024);
+            HttpResponseCache.install(new File(context.getCacheDir(),
+                    "http"), size * 1024 * 1024);
         } catch (IOException e) {
             if (DEBUG_HTTP)
-                Log.w(TAG, "IOException occured while getting cache dir " + e);
+                Log.w(TAG,
+                        "IOException occured while getting cache dir " + e);
+        }
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "Requests: "
