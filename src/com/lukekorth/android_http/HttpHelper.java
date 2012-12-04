@@ -64,6 +64,7 @@ public class HttpHelper {
         }
 
         if (DEBUG_HTTP) {
+            Log.d(TAG, "Android-Http Initialized");
             Log.d(TAG, "Requests: "
                     + HttpResponseCache.getInstalled().getRequestCount() +
                     " Network Requests: "
@@ -82,6 +83,9 @@ public class HttpHelper {
             cache.flush();
             if (DEBUG_HTTP)
                 Log.d(TAG, "Cache was flushed to disk successfully");
+        } else {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Cache was null and was nto flushed to disk");
         }
     }
 
