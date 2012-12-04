@@ -34,7 +34,7 @@ public class HttpHelper {
 
     private static final String TAG = "android-http";
     private static final String UAS = "android-http";
-    private boolean DEBUG_HTTP;
+    private static boolean DEBUG_HTTP;
 
     private Context mContext;
     private static Gson gson = null;
@@ -326,7 +326,7 @@ public class HttpHelper {
         return (T) gson.fromJson(post(url, nameValuePairs), type);
     }
 
-    private String getParameters(List<NameValuePair> nameValuePairs) {
+    public static String getParameters(List<NameValuePair> nameValuePairs) {
         String parameters = "";
 
         for (NameValuePair pair : nameValuePairs) {
