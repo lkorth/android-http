@@ -78,7 +78,13 @@ public class HttpHelper {
 
     public void setCookies(List<NameValuePair> nameValuePairs) {
         for (NameValuePair pair : nameValuePairs) {
-            cookies += pair.getName() + "=" + pair.getValue() + "; ";
+            try {
+                cookies += pair.getName() + "=" + URLEncoder.encode(pair.getValue(), "UTF-8")
+                        + "; ";
+            } catch (UnsupportedEncodingException e) {
+                if (DEBUG_HTTP)
+                    Log.w(TAG, "UnsupportedEncodingException while url encoding cookie " + e);
+            }
         }
 
         cookies = cookies.substring(0, cookies.length() - 2);
