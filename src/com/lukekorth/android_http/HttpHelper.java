@@ -89,13 +89,6 @@ public class HttpHelper {
         }
     }
 
-    public static Gson getGson() {
-        if (gson == null)
-            gson = new Gson();
-
-        return gson;
-    }
-
     public void setConnectTimeout(int seconds) {
         connectTimeout = seconds * 1000;
     }
@@ -330,6 +323,14 @@ public class HttpHelper {
         return (T) gson.fromJson(post(url, nameValuePairs), type);
     }
 
+    /* Public helper methods */
+    public static Gson getGson() {
+        if (gson == null)
+            gson = new Gson();
+
+        return gson;
+    }
+
     public static String encodeParameters(List<NameValuePair> nameValuePairs) {
         String parameters = "";
 
@@ -346,6 +347,7 @@ public class HttpHelper {
         return parameters.substring(0, parameters.length() - 1);
     }
 
+    /* Private helper methods */
     private String readStream(InputStream in) {
         InputStreamReader is = new InputStreamReader(in);
         BufferedReader br = new BufferedReader(is);
