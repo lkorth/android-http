@@ -29,6 +29,7 @@ import java.util.List;
 
 public class HttpHelper {
 
+    public static final int CACHE = -1;
     public static final int NO_CACHE = 0;
     public static final int VALIDATE_CACHE = 1;
 
@@ -98,7 +99,7 @@ public class HttpHelper {
     }
 
     public String get(String url) {
-        return get(url, -1);
+        return get(url, CACHE);
     }
 
     public String get(String url, int cache) {
@@ -148,7 +149,7 @@ public class HttpHelper {
     }
 
     public String get(String url, List<NameValuePair> nameValuePairs) {
-        return get(url, nameValuePairs, -1);
+        return get(url, nameValuePairs, CACHE);
     }
 
     public String get(String url, List<NameValuePair> nameValuePairs, int cache) {
@@ -163,7 +164,7 @@ public class HttpHelper {
 
     @SuppressWarnings("rawtypes")
     public <T> T get(String url, Class type) {
-        return get(url, type, -1);
+        return get(url, type, CACHE);
     }
 
     @SuppressWarnings({
@@ -179,7 +180,7 @@ public class HttpHelper {
 
     @SuppressWarnings("rawtypes")
     public <T> T get(String url, List<NameValuePair> nameValuePairs, Class type) {
-        return get(url, nameValuePairs, type, -1);
+        return get(url, nameValuePairs, type, CACHE);
     }
 
     @SuppressWarnings({
