@@ -159,7 +159,7 @@ public class HttpHelper {
     }
 
     public String get(String url, List<NameValuePair> nameValuePairs, int cache) {
-        url = url + "?" + getParameters(nameValuePairs);
+        url = url + "?" + encodeParameters(nameValuePairs);
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "query string: " + nameValuePairs.toString());
@@ -232,7 +232,7 @@ public class HttpHelper {
     }
 
     public String getCached(String url, List<NameValuePair> nameValuePairs) {
-        url = url + "?" + getParameters(nameValuePairs);
+        url = url + "?" + encodeParameters(nameValuePairs);
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "Attempting to load directly from cache, return null if not cached");
@@ -256,7 +256,7 @@ public class HttpHelper {
     public String post(String url, List<NameValuePair> nameValuePairs) {
         HttpURLConnection urlConnection = null;
         String response = null;
-        String urlParameters = getParameters(nameValuePairs);
+        String urlParameters = encodeParameters(nameValuePairs);
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "url: " + url);
@@ -330,7 +330,7 @@ public class HttpHelper {
         return (T) gson.fromJson(post(url, nameValuePairs), type);
     }
 
-    public static String getParameters(List<NameValuePair> nameValuePairs) {
+    public static String encodeParameters(List<NameValuePair> nameValuePairs) {
         String parameters = "";
 
         for (NameValuePair pair : nameValuePairs) {
