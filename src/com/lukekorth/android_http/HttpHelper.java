@@ -41,6 +41,7 @@ public class HttpHelper {
     private static Gson gson = null;
     private int connectTimeout = 10 * 1000; // 10 seconds in milliseconds
     private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
+    private String cookies = null;
 
     public HttpHelper(Context context) {
         Init(context, (long) 10); // 10 MiB
@@ -73,6 +74,14 @@ public class HttpHelper {
                     " Cache served requests: "
                     + HttpResponseCache.getInstalled().getHitCount());
         }
+    }
+
+    public void setCookies(List<NameValuePair> nameValuePairs) {
+        for (NameValuePair pair : nameValuePairs) {
+            cookies += pair.getName() + "=" + pair.getValue() + "; ";
+        }
+
+        cookies = cookies.substring(0, cookies.length() - 2);
     }
 
     public void flush() {
@@ -116,6 +125,9 @@ public class HttpHelper {
             urlConnection.setConnectTimeout(connectTimeout);
             urlConnection.setReadTimeout(readTimeout);
             urlConnection.setRequestProperty("User-Agent", UAS);
+
+            if (cookies != null)
+                urlConnection.setRequestProperty("Cookie", cookies);
 
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
@@ -264,6 +276,9 @@ public class HttpHelper {
             urlConnection.setConnectTimeout(connectTimeout);
             urlConnection.setReadTimeout(readTimeout);
             urlConnection.setRequestProperty("User-Agent", UAS);
+
+            if (cookies != null)
+                urlConnection.setRequestProperty("Cookie", cookies);
 
             urlConnection.addRequestProperty("Cache-Control", "no-cache");
 
