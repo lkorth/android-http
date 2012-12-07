@@ -105,6 +105,22 @@ public class HttpHelper {
         }
     }
 
+    public void delete() {
+        if (DEBUG_HTTP)
+            Log.d(TAG, "Deleting cache...");
+
+        HttpResponseCache cache = HttpResponseCache.getInstalled();
+        try {
+            cache.delete();
+
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Cache deleted successfully");
+        } catch (IOException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "IOException while deleting cache. " + e);
+        }
+    }
+
     public void setConnectTimeout(int seconds) {
         connectTimeout = seconds * 1000;
     }
