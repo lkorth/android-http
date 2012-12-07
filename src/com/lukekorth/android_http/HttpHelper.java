@@ -242,6 +242,9 @@ public class HttpHelper {
 
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             response = readStream(in);
+
+            if (DEBUG_HTTP)
+                Log.d(TAG, "cache payload: " + response);
         } catch (FileNotFoundException e) {
             if (DEBUG_HTTP)
                 Log.w(TAG, "The requested resource was not cached");
