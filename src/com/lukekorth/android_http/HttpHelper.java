@@ -390,11 +390,15 @@ public class HttpHelper {
 
     /* Private helper methods */
     private String readStream(InputStream in) {
-        InputStreamReader is = new InputStreamReader(in);
-        BufferedReader br = new BufferedReader(is);
-        StringBuilder sb = new StringBuilder();
+        InputStreamReader is = null;
+        BufferedReader br = null;
+        StringBuilder sb = null;
 
         try {
+            is = new InputStreamReader(in);
+            br = new BufferedReader(is);
+            sb = new StringBuilder();
+
             String read = br.readLine();
 
             while (read != null) {
@@ -404,6 +408,9 @@ public class HttpHelper {
         } catch (IOException e) {
             if (DEBUG_HTTP)
                 Log.w(TAG, "IOException occured while reading response from server " + e);
+        } catch (NullPointerException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "A NullPointerException occured while reading response from server " + e);
         }
 
         try {
@@ -413,9 +420,15 @@ public class HttpHelper {
         } catch (IOException e) {
             if (DEBUG_HTTP)
                 Log.w(TAG, "IOException occured while closing streams " + e);
+        } catch (NullPointerException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "A NullPointerException occured while closing streams " + e);
         }
 
-        return sb.toString();
+        if (sb != null)
+            return sb.toString();
+        else
+            return null;
     }
 
     // http://izvornikod.com/Blog/tabid/82/EntryId/13/How-to-check-if-your-android-application-is-running-in-debug-or-release-mode.aspx
