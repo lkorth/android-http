@@ -1,17 +1,6 @@
 
 package com.lukekorth.android_http;
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.util.Log;
-
-import com.google.gson.Gson;
-import com.integralblue.httpresponsecache.HttpResponseCache;
-
-import org.apache.http.NameValuePair;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +15,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
+
+import org.apache.http.NameValuePair;
+
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import com.google.gson.Gson;
+import com.integralblue.httpresponsecache.HttpResponseCache;
 
 public class HttpHelper {
 
@@ -282,6 +284,56 @@ public class HttpHelper {
         }
 
         return (T) gson.fromJson(getCached(url, nameValuePairs), type);
+    }
+    
+    public Bitmap getBitmap(String url) {
+        return getBitmap(url, CACHE);
+    }
+    
+    public Bitmap getBitmap(String url, int cache) {
+    	HttpURLConnection urlConnection = null;
+        Bitmap response = null;
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "url: " + url);
+        }
+
+        try {
+            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+
+            urlConnection.setConnectTimeout(connectTimeout);
+            urlConnection.setReadTimeout(readTimeout);
+            urlConnection.setRequestProperty("User-Agent", UAS);
+            urlConnection.setDoInput(true);
+
+            if (cookies != null)
+                urlConnection.setRequestProperty("Cookie", cookies);
+
+            if (cache == NO_CACHE) {
+                urlConnection.addRequestProperty("Cache-Control", "no-cache");
+            } else if (cache == VALIDATE_CACHE) {
+                urlConnection.addRequestProperty("Cache-Control", "max-age=0");
+            }
+
+            response = BitmapFactory.decodeStream(urlConnection.getInputStream());
+
+            if (DEBUG_HTTP) {
+                Log.d(TAG, "response code: " + urlConnection.getResponseCode());
+            }
+        } catch (MalformedURLException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "MalformedURLException occured while parsing url " + e);
+        } catch (IOException e) {
+            if (DEBUG_HTTP) {
+                Log.w(TAG,
+                        "IOException occured while trying to open connection or getting input stream. "
+                                + e);
+            }
+        } finally {
+            urlConnection.disconnect();
+        }
+
+        return response;
     }
 
     public String post(String url, List<NameValuePair> nameValuePairs) {
