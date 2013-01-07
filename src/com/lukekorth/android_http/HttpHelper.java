@@ -166,7 +166,15 @@ public class HttpHelper {
 
             if (additionalHeaderFields.size() > 0) {
                 for (NameValuePair pair : additionalHeaderFields) {
-                    urlConnection.setRequestProperty(pair.getName(), pair.getValue());
+                    try {
+                        urlConnection.setRequestProperty(pair.getName(),
+                                URLEncoder.encode(pair.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        if (DEBUG_HTTP)
+                            Log.w(TAG,
+                                    "UnsupportedEncodingException while url encoding additional header field "
+                                            + e);
+                    }
                 }
             }
 
@@ -340,7 +348,15 @@ public class HttpHelper {
 
             if (additionalHeaderFields.size() > 0) {
                 for (NameValuePair pair : additionalHeaderFields) {
-                    urlConnection.setRequestProperty(pair.getName(), pair.getValue());
+                    try {
+                        urlConnection.setRequestProperty(pair.getName(),
+                                URLEncoder.encode(pair.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        if (DEBUG_HTTP)
+                            Log.w(TAG,
+                                    "UnsupportedEncodingException while url encoding additional header field "
+                                            + e);
+                    }
                 }
             }
 
@@ -394,7 +410,15 @@ public class HttpHelper {
 
             if (additionalHeaderFields.size() > 0) {
                 for (NameValuePair pair : additionalHeaderFields) {
-                    urlConnection.setRequestProperty(pair.getName(), pair.getValue());
+                    try {
+                        urlConnection.setRequestProperty(pair.getName(),
+                                URLEncoder.encode(pair.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        if (DEBUG_HTTP)
+                            Log.w(TAG,
+                                    "UnsupportedEncodingException while url encoding additional header field "
+                                            + e);
+                    }
                 }
             }
 
