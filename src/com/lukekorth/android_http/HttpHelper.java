@@ -290,7 +290,8 @@ public class HttpHelper {
     }
 
     public String getCached(String url, List<NameValuePair> nameValuePairs) {
-        url = url + "?" + encodeParameters(nameValuePairs);
+        if (nameValuePairs != null && nameValuePairs.size() > 0)
+            url = url + "?" + encodeParameters(nameValuePairs);
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "Attempting to load directly from cache, return null if not cached");
@@ -298,6 +299,17 @@ public class HttpHelper {
         }
 
         return getCached(url);
+    }
+
+    @SuppressWarnings({
+            "rawtypes", "unchecked"
+    })
+    public <T> T getCached(String url, Class type) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(getCached(url, new ArrayList<NameValuePair>()), type);
     }
 
     @SuppressWarnings({
