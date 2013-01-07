@@ -42,8 +42,10 @@ public class HttpHelper {
 
     private Context mContext;
     private static Gson gson = null;
+
     private int connectTimeout = 10 * 1000; // 10 seconds in milliseconds
     private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
+
     private String cookies = null;
 
     public HttpHelper(Context context) {
@@ -286,13 +288,13 @@ public class HttpHelper {
 
         return (T) gson.fromJson(getCached(url, nameValuePairs), type);
     }
-    
+
     public Bitmap getBitmap(String url) {
         return getBitmap(url, CACHE);
     }
-    
+
     public Bitmap getBitmap(String url, int cache) {
-    	HttpURLConnection urlConnection = null;
+        HttpURLConnection urlConnection = null;
         Bitmap response = null;
 
         if (DEBUG_HTTP) {
