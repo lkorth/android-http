@@ -28,6 +28,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HttpHelper {
@@ -47,6 +48,7 @@ public class HttpHelper {
     private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
 
     private String cookies = null;
+    private List<NameValuePair> additionalHeaderFields;
 
     public HttpHelper(Context context) {
         Init(context, (long) 10); // 10 MiB
@@ -79,6 +81,8 @@ public class HttpHelper {
                     " Cache served requests: "
                     + HttpResponseCache.getInstalled().getHitCount());
         }
+
+        additionalHeaderFields = new ArrayList<NameValuePair>();
     }
 
     public void setCookies(List<NameValuePair> nameValuePairs) {
@@ -93,6 +97,10 @@ public class HttpHelper {
         }
 
         cookies = cookies.substring(0, cookies.length() - 2);
+    }
+
+    public void setHeaderField(String name, String value) {
+        additionalHeaderFields.add(new BasicNameValuePair(name, value));
     }
 
     public void flush() {
@@ -155,6 +163,20 @@ public class HttpHelper {
 
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
+
+            if (additionalHeaderFields.size() > 0) {
+                for (NameValuePair pair : additionalHeaderFields) {
+                    try {
+                        urlConnection.setRequestProperty(pair.getName(),
+                                URLEncoder.encode(pair.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        if (DEBUG_HTTP)
+                            Log.w(TAG,
+                                    "UnsupportedEncodingException while url encoding additional header field "
+                                            + e);
+                    }
+                }
+            }
 
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
@@ -312,6 +334,20 @@ public class HttpHelper {
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
 
+            if (additionalHeaderFields.size() > 0) {
+                for (NameValuePair pair : additionalHeaderFields) {
+                    try {
+                        urlConnection.setRequestProperty(pair.getName(),
+                                URLEncoder.encode(pair.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        if (DEBUG_HTTP)
+                            Log.w(TAG,
+                                    "UnsupportedEncodingException while url encoding additional header field "
+                                            + e);
+                    }
+                }
+            }
+
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
             } else if (cache == VALIDATE_CACHE) {
@@ -359,6 +395,20 @@ public class HttpHelper {
 
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
+
+            if (additionalHeaderFields.size() > 0) {
+                for (NameValuePair pair : additionalHeaderFields) {
+                    try {
+                        urlConnection.setRequestProperty(pair.getName(),
+                                URLEncoder.encode(pair.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        if (DEBUG_HTTP)
+                            Log.w(TAG,
+                                    "UnsupportedEncodingException while url encoding additional header field "
+                                            + e);
+                    }
+                }
+            }
 
             urlConnection.addRequestProperty("Cache-Control", "no-cache");
 
