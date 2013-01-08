@@ -388,13 +388,17 @@ public class HttpHelper {
     }
 
     public String post(String url, List<NameValuePair> nameValuePairs) {
+        return post(url, encodeParameters(nameValuePairs));
+    }
+
+    public String post(String url, String params) {
         HttpURLConnection urlConnection = null;
         String response = null;
-        String urlParameters = encodeParameters(nameValuePairs);
+        String urlParameters = params;
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "url: " + url);
-            Log.d(TAG, "query string: " + nameValuePairs.toString());
+            Log.d(TAG, "query string: " + params);
         }
 
         try {
