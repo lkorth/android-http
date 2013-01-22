@@ -477,6 +477,28 @@ public class HttpHelper {
     @SuppressWarnings({
             "unchecked", "rawtypes"
     })
+    public <T> T post(String url, Class type) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(post(url, new String()), type);
+    }
+
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
+    public <T> T post(String url, String params, Class type) {
+        if (gson == null) {
+            gson = new Gson();
+        }
+
+        return (T) gson.fromJson(post(url, params), type);
+    }
+
+    @SuppressWarnings({
+            "unchecked", "rawtypes"
+    })
     public <T> T post(String url, List<NameValuePair> nameValuePairs, Class type) {
         if (gson == null) {
             gson = new Gson();
