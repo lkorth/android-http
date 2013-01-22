@@ -387,10 +387,6 @@ public class HttpHelper {
         return response;
     }
 
-    public String post(String url, List<NameValuePair> nameValuePairs) {
-        return post(url, encodeParameters(nameValuePairs));
-    }
-
     public String post(String url, String params) {
         HttpURLConnection urlConnection = null;
         String response = null;
@@ -472,6 +468,10 @@ public class HttpHelper {
         }
 
         return response;
+    }
+
+    public String post(String url, List<NameValuePair> nameValuePairs) {
+        return post(url, encodeParameters(nameValuePairs));
     }
 
     @SuppressWarnings({
