@@ -541,8 +541,12 @@ public class HttpHelper {
             urlConnection.addRequestProperty("Cache-Control", "no-cache");
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Connection", "Keep-Alive");
+
             urlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary="
                     + boundary);
+            urlConnection.setRequestProperty("Content-Disposition",
+                    "attachment; name=\"uploadedfile\";filename=\""
+                            + imagePath + "\"" + lineEnd);
 
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
@@ -562,12 +566,6 @@ public class HttpHelper {
             }
 
             outputStream = new DataOutputStream(urlConnection.getOutputStream());
-            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
-            outputStream.writeBytes("Content-Type: image/pjpeg");
-            outputStream
-                    .writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\""
-                            + imagePath + "\"" + lineEnd);
-            outputStream.writeBytes(lineEnd);
 
             bytesAvailable = fileInputStream.available();
             int max = bytesAvailable;
