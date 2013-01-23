@@ -17,7 +17,9 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -505,6 +507,117 @@ public class HttpHelper {
         }
 
         return (T) gson.fromJson(post(url, nameValuePairs), type);
+    }
+
+    public String uploadImage(String url, String imagePath, ProgressCallback callback) {
+        // Delimiters for the upload
+        // following:
+        // http://reecon.wordpress.com/2010/04/25/uploading-files-to-http-server-using-post-android-sdk/
+        final String lineEnd = "\r\n";
+        final String twoHyphens = "--";
+        final String boundary = "*****";
+
+        int bytesRead, bytesAvailable, bufferSize;
+        byte[] buffer;
+        int maxBufferSize = 1 * 1024 * 1024;
+
+        HttpURLConnection urlConnection = null;
+        String response = null;
+
+        DataOutputStream outputStream = null;
+
+        if (DEBUG_HTTP) {
+            Log.d(TAG, "url: " + url);
+        }
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(new File(imagePath));
+
+            urlConnection = (HttpURLConnection) new URL(url).openConnection();
+
+            urlConnection.setDoInput(true);
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestProperty("User-Agent", UAS);
+            urlConnection.addRequestProperty("Cache-Control", "no-cache");
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("Connection", "Keep-Alive");
+            urlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary="
+                    + boundary);
+
+            if (cookies != null)
+                urlConnection.setRequestProperty("Cookie", cookies);
+
+            if (additionalHeaderFields.size() > 0) {
+                for (NameValuePair pair : additionalHeaderFields) {
+                    try {
+                        urlConnection.setRequestProperty(pair.getName(),
+                                URLEncoder.encode(pair.getValue(), "UTF-8"));
+                    } catch (UnsupportedEncodingException e) {
+                        if (DEBUG_HTTP)
+                            Log.w(TAG,
+                                    "UnsupportedEncodingException while url encoding additional header field "
+                                            + e);
+                    }
+                }
+            }
+
+            outputStream = new DataOutputStream(urlConnection.getOutputStream());
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream.writeBytes("Content-Type: image/pjpeg");
+            outputStream
+                    .writeBytes("Content-Disposition: form-data; name=\"uploadedfile\";filename=\""
+                            + imagePath + "\"" + lineEnd);
+            outputStream.writeBytes(lineEnd);
+
+            bytesAvailable = fileInputStream.available();
+            int max = bytesAvailable;
+            bufferSize = Math.min(bytesAvailable, maxBufferSize);
+            buffer = new byte[bufferSize];
+
+            // Read file
+            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            int progress = bytesRead;
+
+            while (bytesRead > 0) {
+                if (DEBUG_HTTP) {
+                    Log.d(TAG, "upload progress: " + (int) (((double) progress / max) * 100) + "/"
+                            + 100);
+                }
+
+                if (callback != null)
+                    callback.MakeProgress((int) (((double) progress / max) * 100));
+
+                outputStream.write(buffer, 0, bufferSize);
+                bytesAvailable = fileInputStream.available();
+                bufferSize = Math.min(bytesAvailable, maxBufferSize);
+                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                progress += bytesRead;
+            }
+
+            outputStream.writeBytes(lineEnd);
+            outputStream.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
+
+            response = readStream(urlConnection.getInputStream());
+        } catch (FileNotFoundException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "FileNotFoundException occured while fetching the image " + e);
+        } catch (MalformedURLException e) {
+            if (DEBUG_HTTP)
+                Log.w(TAG, "MalformedURLException occured while parsing url " + e);
+        } catch (IOException e) {
+            if (DEBUG_HTTP) {
+                response = readStream(urlConnection.getErrorStream());
+                Log.d(TAG, "error response: " + response);
+
+                Log.w(TAG,
+                        "IOException occured while trying to open connection or getting input stream. "
+                                + e);
+            }
+        } finally {
+            urlConnection.disconnect();
+        }
+
+        return response;
     }
 
     /* Public helper methods */
