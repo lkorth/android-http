@@ -389,6 +389,10 @@ public class HttpHelper {
         return response;
     }
 
+    public String post(String url) {
+        return post(url, "");
+    }
+
     public String post(String url, String params) {
         HttpURLConnection urlConnection = null;
         String response = null;
