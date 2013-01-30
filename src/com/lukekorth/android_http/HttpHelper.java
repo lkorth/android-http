@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.integralblue.httpresponsecache.HttpResponseCache;
 
 import org.apache.http.NameValuePair;
@@ -237,7 +238,14 @@ public class HttpHelper {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(get(url, cache), type);
+        try {
+            return (T) gson.fromJson(get(url, cache), type);
+        } catch (JsonSyntaxException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Error while parsing json: " + e);
+
+            return null;
+        }
     }
 
     @SuppressWarnings("rawtypes")
@@ -253,7 +261,14 @@ public class HttpHelper {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(get(url, nameValuePairs, cache), type);
+        try {
+            return (T) gson.fromJson(get(url, nameValuePairs, cache), type);
+        } catch (JsonSyntaxException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Error while parsing json: " + e);
+
+            return null;
+        }
     }
 
     public String getCached(String url) {
@@ -310,7 +325,14 @@ public class HttpHelper {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(getCached(url, new ArrayList<NameValuePair>()), type);
+        try {
+            return (T) gson.fromJson(getCached(url, new ArrayList<NameValuePair>()), type);
+        } catch (JsonSyntaxException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Error while parsing json: " + e);
+
+            return null;
+        }
     }
 
     @SuppressWarnings({
@@ -321,7 +343,14 @@ public class HttpHelper {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(getCached(url, nameValuePairs), type);
+        try {
+            return (T) gson.fromJson(getCached(url, nameValuePairs), type);
+        } catch (JsonSyntaxException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Error while parsing json: " + e);
+
+            return null;
+        }
     }
 
     public Bitmap getBitmap(String url) {
@@ -487,7 +516,14 @@ public class HttpHelper {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(post(url, new String()), type);
+        try {
+            return (T) gson.fromJson(post(url, new String()), type);
+        } catch (JsonSyntaxException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Error while parsing json: " + e);
+
+            return null;
+        }
     }
 
     @SuppressWarnings({
@@ -498,7 +534,14 @@ public class HttpHelper {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(post(url, params), type);
+        try {
+            return (T) gson.fromJson(post(url, params), type);
+        } catch (JsonSyntaxException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Error while parsing json: " + e);
+
+            return null;
+        }
     }
 
     @SuppressWarnings({
@@ -509,7 +552,14 @@ public class HttpHelper {
             gson = new Gson();
         }
 
-        return (T) gson.fromJson(post(url, nameValuePairs), type);
+        try {
+            return (T) gson.fromJson(post(url, nameValuePairs), type);
+        } catch (JsonSyntaxException e) {
+            if (DEBUG_HTTP)
+                Log.d(TAG, "Error while parsing json: " + e);
+
+            return null;
+        }
     }
 
     public String uploadImage(String url, String imagePath, ProgressCallback callback) {
