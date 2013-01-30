@@ -218,9 +218,8 @@ public class HttpHelper {
     public String get(String url, List<NameValuePair> nameValuePairs, int cache) {
         url = url + "?" + encodeParameters(nameValuePairs);
 
-        if (DEBUG_HTTP) {
+        if (DEBUG_HTTP)
             Log.d(TAG, "query string: " + nameValuePairs.toString());
-        }
 
         return get(url, cache);
     }
