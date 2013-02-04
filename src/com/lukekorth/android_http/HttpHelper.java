@@ -102,6 +102,10 @@ public class HttpHelper {
         cookies = cookies.substring(0, cookies.length() - 2);
     }
 
+    public void clearHeaders() {
+        additionalHeaderFields.clear();
+    }
+
     public void setHeaderField(String name, String value) {
         additionalHeaderFields.add(new BasicNameValuePair(name, value));
     }
