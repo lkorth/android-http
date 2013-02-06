@@ -2,6 +2,7 @@
 package com.lukekorth.android_http;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
@@ -47,6 +48,8 @@ public class HttpHelper {
     private Context mContext;
     private static Gson gson = null;
 
+    private SharedPreferences mPrefs;
+
     private int connectTimeout = 10 * 1000; // 10 seconds in milliseconds
     private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
 
@@ -84,6 +87,8 @@ public class HttpHelper {
                     " Cache served requests: "
                     + HttpResponseCache.getInstalled().getHitCount());
         }
+
+        mPrefs = context.getSharedPreferences(TAG, Context.MODE_PRIVATE);
 
         additionalHeaderFields = new ArrayList<NameValuePair>();
     }
@@ -188,13 +193,33 @@ public class HttpHelper {
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
             } else if (cache == VALIDATE_CACHE) {
-                urlConnection.addRequestProperty("Cache-Control", "max-age=0");
+                String etag = mPrefs.getString(url, null);
+
+                if (etag != null)
+                    urlConnection.addRequestProperty("If-None-Match", etag);
             }
 
-            response = readStream(urlConnection.getInputStream());
+            int responseCode = urlConnection.getResponseCode();
+            if (responseCode == 304) {
+                if (DEBUG_HTTP)
+                    Log.d(TAG,
+                            "Server responded with 304 not modified, attempting to load from cache");
+
+                response = getCached(url);
+
+                if (response == null) {
+                    if (DEBUG_HTTP)
+                        Log.d(TAG, "Response was not in the cache, fetching from server");
+
+                    response = get(url);
+                }
+            } else
+                response = readStream(urlConnection.getInputStream());
+
+            mPrefs.edit().putString(url, urlConnection.getHeaderField("ETag")).commit();
 
             if (DEBUG_HTTP) {
-                Log.d(TAG, "response code: " + urlConnection.getResponseCode());
+                Log.d(TAG, "response code: " + responseCode);
                 Log.d(TAG, "response payload: " + response);
             }
         } catch (MalformedURLException e) {
