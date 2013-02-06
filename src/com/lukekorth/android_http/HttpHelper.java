@@ -216,6 +216,9 @@ public class HttpHelper {
             } else
                 response = readStream(urlConnection.getInputStream());
 
+            if (response == null)
+                response = getCached(url);
+
             mPrefs.edit().putString(url, urlConnection.getHeaderField("ETag")).commit();
 
             if (DEBUG_HTTP) {
