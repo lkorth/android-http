@@ -144,6 +144,8 @@ public class HttpHelper {
             if (DEBUG_HTTP)
                 Log.d(TAG, "IOException while deleting cache. " + e);
         }
+
+        mPrefs.edit().clear().commit();
     }
 
     public void setConnectTimeout(int seconds) {
