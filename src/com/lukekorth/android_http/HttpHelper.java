@@ -217,13 +217,24 @@ public class HttpHelper {
 
                     response = get(url);
                 }
-            } else
+            } else {
                 response = readStream(urlConnection.getInputStream());
 
-            if (response == null)
-                response = getCached(url);
+                if (response != null)
+                    flush();
 
-            mPrefs.edit().putString(url, urlConnection.getHeaderField("ETag")).commit();
+                String cacheETag = urlConnection.getHeaderField("ETag");
+                if (cacheETag != null)
+                    mPrefs.edit().putString(url, cacheETag).commit();
+            }
+
+            if (response == null) {
+                if (DEBUG_HTTP)
+                    Log.d(TAG, "All attempts have failed, attempting to fall back to cache");
+
+                response = getCached(url);
+                additionalFetch = true;
+            }
 
             if (DEBUG_HTTP && !additionalFetch) {
                 Log.d(TAG, "response code: " + responseCode);
