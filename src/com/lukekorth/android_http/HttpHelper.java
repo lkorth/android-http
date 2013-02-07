@@ -163,6 +163,7 @@ public class HttpHelper {
     public String get(String url, int cache) {
         HttpURLConnection urlConnection = null;
         String response = null;
+        boolean additionalFetch = false;
 
         if (DEBUG_HTTP) {
             Log.d(TAG, "url: " + url);
@@ -208,6 +209,7 @@ public class HttpHelper {
                             "Server responded with 304 not modified, attempting to load from cache");
 
                 response = getCached(url);
+                additionalFetch = true;
 
                 if (response == null) {
                     if (DEBUG_HTTP)
@@ -223,7 +225,7 @@ public class HttpHelper {
 
             mPrefs.edit().putString(url, urlConnection.getHeaderField("ETag")).commit();
 
-            if (DEBUG_HTTP) {
+            if (DEBUG_HTTP && !additionalFetch) {
                 Log.d(TAG, "response code: " + responseCode);
                 Log.d(TAG, "response payload: " + response);
             }
