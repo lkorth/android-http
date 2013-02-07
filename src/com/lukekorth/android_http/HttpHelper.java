@@ -126,7 +126,7 @@ public class HttpHelper {
                 Log.d(TAG, "Cache was flushed to disk successfully");
         } else {
             if (DEBUG_HTTP)
-                Log.d(TAG, "Cache was null and was nto flushed to disk");
+                Log.d(TAG, "Cache was null and was not flushed to disk");
         }
     }
 
