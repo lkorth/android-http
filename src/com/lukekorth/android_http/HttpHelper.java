@@ -748,41 +748,46 @@ public class HttpHelper {
         BufferedReader br = null;
         StringBuilder sb = null;
 
-        try {
-            is = new InputStreamReader(in);
-            br = new BufferedReader(is);
-            sb = new StringBuilder();
+        if (in != null) {
+            try {
+                is = new InputStreamReader(in);
+                br = new BufferedReader(is);
+                sb = new StringBuilder();
 
-            String read = br.readLine();
+                String read = br.readLine();
 
-            while (read != null) {
-                sb.append(read);
-                read = br.readLine();
+                while (read != null) {
+                    sb.append(read);
+                    read = br.readLine();
+                }
+            } catch (IOException e) {
+                if (DEBUG_HTTP)
+                    Log.w(TAG, "IOException occured while reading response from server " + e);
+            } catch (NullPointerException e) {
+                if (DEBUG_HTTP)
+                    Log.w(TAG, "A NullPointerException occured while reading response from server "
+                            + e);
             }
-        } catch (IOException e) {
-            if (DEBUG_HTTP)
-                Log.w(TAG, "IOException occured while reading response from server " + e);
-        } catch (NullPointerException e) {
-            if (DEBUG_HTTP)
-                Log.w(TAG, "A NullPointerException occured while reading response from server " + e);
-        }
 
-        try {
-            in.close();
-            is.close();
-            br.close();
-        } catch (IOException e) {
-            if (DEBUG_HTTP)
-                Log.w(TAG, "IOException occured while closing streams " + e);
-        } catch (NullPointerException e) {
-            if (DEBUG_HTTP)
-                Log.w(TAG, "A NullPointerException occured while closing streams " + e);
-        }
+            try {
+                in.close();
+                is.close();
+                br.close();
+            } catch (IOException e) {
+                if (DEBUG_HTTP)
+                    Log.w(TAG, "IOException occured while closing streams " + e);
+            } catch (NullPointerException e) {
+                if (DEBUG_HTTP)
+                    Log.w(TAG, "A NullPointerException occured while closing streams " + e);
+            }
 
-        if (sb != null)
-            return sb.toString();
-        else
+            if (sb != null)
+                return sb.toString();
+
             return null;
+        }
+
+        return null;
     }
 
     // http://izvornikod.com/Blog/tabid/82/EntryId/13/How-to-check-if-your-android-application-is-running-in-debug-or-release-mode.aspx
