@@ -238,6 +238,7 @@ public class HttpHelper {
 
             if (DEBUG_HTTP && !additionalFetch) {
                 Log.d(TAG, "response code: " + responseCode);
+                Log.d(TAG, "response headers: " + urlConnection.getHeaderFields().toString());
                 Log.d(TAG, "response payload: " + response);
             }
         } catch (MalformedURLException e) {
@@ -333,8 +334,11 @@ public class HttpHelper {
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             response = readStream(in);
 
-            if (DEBUG_HTTP)
+            if (DEBUG_HTTP) {
+                Log.d(TAG, "response code: " + urlConnection.getResponseCode());
+                Log.d(TAG, "response headers: " + urlConnection.getHeaderFields().toString());
                 Log.d(TAG, "cache payload: " + response);
+            }
         } catch (FileNotFoundException e) {
             if (DEBUG_HTTP)
                 Log.w(TAG, "The requested resource was not cached");
@@ -529,7 +533,7 @@ public class HttpHelper {
 
             if (DEBUG_HTTP) {
                 Log.d(TAG, "response code: " + urlConnection.getResponseCode());
-                Log.d(TAG, "headers: " + urlConnection.getHeaderFields().toString());
+                Log.d(TAG, "response headers: " + urlConnection.getHeaderFields().toString());
                 Log.d(TAG, "response payload: " + response);
             }
         } catch (MalformedURLException e) {
