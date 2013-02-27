@@ -220,7 +220,7 @@ public class HttpHelper {
             } else {
                 response = readStream(urlConnection.getInputStream());
 
-                if (response != null)
+                if (response != null && cache != NO_CACHE)
                     flush();
 
                 String cacheETag = urlConnection.getHeaderField("ETag");
