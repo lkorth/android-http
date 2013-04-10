@@ -179,6 +179,9 @@ public class HttpHelper {
                 }
             }
 
+            if (DEBUG_HTTP)
+                Log.d(TAG, "request headers: " + urlConnection.getRequestProperties().toString());
+
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
             } else if (cache == VALIDATE_CACHE) {
