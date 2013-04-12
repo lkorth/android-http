@@ -179,9 +179,6 @@ public class HttpHelper {
                 }
             }
 
-            if (DEBUG_HTTP)
-                Log.d(TAG, "request headers: " + urlConnection.getRequestProperties().toString());
-
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
             } else if (cache == VALIDATE_CACHE) {
@@ -190,6 +187,9 @@ public class HttpHelper {
                 if (etag != null)
                     urlConnection.addRequestProperty("If-None-Match", etag);
             }
+
+            if (DEBUG_HTTP)
+                Log.d(TAG, "request headers: " + urlConnection.getRequestProperties().toString());
 
             int responseCode = urlConnection.getResponseCode();
             if (responseCode == 304) {
@@ -428,6 +428,9 @@ public class HttpHelper {
                 urlConnection.addRequestProperty("Cache-Control", "max-age=0");
             }
 
+            if (DEBUG_HTTP)
+                Log.d(TAG, "request headers: " + urlConnection.getRequestProperties().toString());
+
             response = BitmapFactory.decodeStream(urlConnection.getInputStream());
 
             if (DEBUG_HTTP) {
@@ -485,6 +488,9 @@ public class HttpHelper {
             urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             urlConnection.setRequestProperty("Content-Length",
                     Integer.toString(urlParameters.getBytes().length));
+
+            if (DEBUG_HTTP)
+                Log.d(TAG, "request headers: " + urlConnection.getRequestProperties().toString());
 
             OutputStream output = null;
             try {
