@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -21,7 +22,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -592,7 +592,7 @@ public class HttpHelper {
         }
     }
 
-    public String uploadImage(String url, String imagePath, ProgressCallback callback) {
+    public String uploadImage(Context context, String url, Uri image, ProgressCallback callback) {
         // Delimiters for the upload
         // following:
         // http://reecon.wordpress.com/2010/04/25/uploading-files-to-http-server-using-post-android-sdk/
@@ -614,7 +614,7 @@ public class HttpHelper {
         }
 
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(imagePath));
+            InputStream inputStream = context.getContentResolver().openInputStream(image);
 
             urlConnection = (HttpURLConnection) new URL(url).openConnection();
 
@@ -625,11 +625,14 @@ public class HttpHelper {
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("Connection", "Keep-Alive");
 
+            String[] imagePath = image.toString().split("/");
+            String imageName = imagePath[imagePath.length - 1];
+
             urlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary="
                     + boundary);
             urlConnection.setRequestProperty("Content-Disposition",
                     "attachment; name=\"uploadedfile\";filename=\""
-                            + imagePath + "\"" + lineEnd);
+                            + imageName + "\"" + lineEnd);
 
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
@@ -645,13 +648,13 @@ public class HttpHelper {
 
             outputStream = new DataOutputStream(urlConnection.getOutputStream());
 
-            bytesAvailable = fileInputStream.available();
+            bytesAvailable = inputStream.available();
             int max = bytesAvailable;
             bufferSize = Math.min(bytesAvailable, maxBufferSize);
             buffer = new byte[bufferSize];
 
             // Read file
-            bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+            bytesRead = inputStream.read(buffer, 0, bufferSize);
             int progress = bytesRead;
 
             while (bytesRead > 0) {
@@ -664,9 +667,9 @@ public class HttpHelper {
                     callback.MakeProgress((int) (((double) progress / max) * 100));
 
                 outputStream.write(buffer, 0, bufferSize);
-                bytesAvailable = fileInputStream.available();
+                bytesAvailable = inputStream.available();
                 bufferSize = Math.min(bytesAvailable, maxBufferSize);
-                bytesRead = fileInputStream.read(buffer, 0, bufferSize);
+                bytesRead = inputStream.read(buffer, 0, bufferSize);
                 progress += bytesRead;
             }
 
