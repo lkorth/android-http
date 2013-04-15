@@ -640,6 +640,9 @@ public class HttpHelper {
                 }
             }
 
+            if (DEBUG_HTTP)
+                Log.d(TAG, urlConnection.getRequestProperties().toString());
+
             outputStream = new DataOutputStream(urlConnection.getOutputStream());
 
             bytesAvailable = fileInputStream.available();
