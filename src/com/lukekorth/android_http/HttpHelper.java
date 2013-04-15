@@ -690,6 +690,9 @@ public class HttpHelper {
             urlConnection.disconnect();
         }
 
+        if (DEBUG_HTTP)
+            Log.d(TAG, "ImageUpload response: " + response);
+
         return response;
     }
 
