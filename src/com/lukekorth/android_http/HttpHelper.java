@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -22,6 +21,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -592,7 +592,7 @@ public class HttpHelper {
         }
     }
 
-    public String uploadImage(Context context, String url, Uri image, ProgressCallback callback) {
+    public String uploadImage(Context context, String url, String image, ProgressCallback callback) {
         // Delimiters for the upload
         // following:
         // http://reecon.wordpress.com/2010/04/25/uploading-files-to-http-server-using-post-android-sdk/
@@ -614,7 +614,7 @@ public class HttpHelper {
         }
 
         try {
-            InputStream inputStream = context.getContentResolver().openInputStream(image);
+            FileInputStream inputStream = new FileInputStream(new File(image));
 
             urlConnection = (HttpURLConnection) new URL(url).openConnection();
 
@@ -630,9 +630,6 @@ public class HttpHelper {
 
             urlConnection.setRequestProperty("Content-Type", "multipart/form-data;boundary="
                     + boundary);
-            urlConnection.setRequestProperty("Content-Disposition",
-                    "attachment; name=\"uploadedfile\";filename=\""
-                            + imageName + "\"" + lineEnd);
 
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
@@ -647,6 +644,12 @@ public class HttpHelper {
                 Log.d(TAG, urlConnection.getRequestProperties().toString());
 
             outputStream = new DataOutputStream(urlConnection.getOutputStream());
+
+            outputStream.writeBytes(twoHyphens + boundary + lineEnd);
+            outputStream
+                    .writeBytes("Content-Disposition: form-data; name=\"file\";filename=\""
+                            + imageName + "\"" + lineEnd);
+            outputStream.writeBytes(lineEnd);
 
             bytesAvailable = inputStream.available();
             int max = bytesAvailable;
