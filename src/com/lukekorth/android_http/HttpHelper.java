@@ -209,20 +209,13 @@ public class HttpHelper {
             } else {
                 response = readStream(urlConnection.getInputStream());
 
-                if (response != null && cache != NO_CACHE)
+                if (response != null && cache != NO_CACHE) {
                     flush();
 
-                String cacheETag = urlConnection.getHeaderField("ETag");
-                if (cacheETag != null)
-                    mPrefs.edit().putString(url, cacheETag).commit();
-            }
-
-            if (response == null) {
-                if (DEBUG_HTTP)
-                    Log.d(TAG, "All attempts have failed, attempting to fall back to cache");
-
-                response = getCached(url);
-                additionalFetch = true;
+                    String cacheETag = urlConnection.getHeaderField("ETag");
+                    if (cacheETag != null)
+                        mPrefs.edit().putString(url, cacheETag).commit();
+                }
             }
 
             if (DEBUG_HTTP && !additionalFetch) {
@@ -243,6 +236,13 @@ public class HttpHelper {
                                 + e);
             }
         } finally {
+            if (response == null) {
+                if (DEBUG_HTTP)
+                    Log.d(TAG, "All attempts have failed, attempting to fall back to cache");
+
+                response = getCached(url);
+            }
+
             urlConnection.disconnect();
         }
 
