@@ -129,14 +129,16 @@ public class HttpHelper {
             Log.d(TAG, "Deleting cache...");
 
         HttpResponseCache cache = HttpResponseCache.getInstalled();
-        try {
-            cache.delete();
+        if (cache != null) {
+            try {
+                cache.delete();
 
-            if (DEBUG_HTTP)
-                Log.d(TAG, "Cache deleted successfully");
-        } catch (IOException e) {
-            if (DEBUG_HTTP)
-                Log.d(TAG, "IOException while deleting cache. " + e);
+                if (DEBUG_HTTP)
+                    Log.d(TAG, "Cache deleted successfully");
+            } catch (IOException e) {
+                if (DEBUG_HTTP)
+                    Log.d(TAG, "IOException while deleting cache. " + e);
+            }
         }
 
         mPrefs.edit().clear().commit();
