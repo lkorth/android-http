@@ -15,7 +15,6 @@ import com.google.gson.JsonSyntaxException;
 import com.integralblue.httpresponsecache.HttpResponseCache;
 
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -33,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class HttpHelper {
@@ -54,7 +54,7 @@ public class HttpHelper {
     private int readTimeout = 60 * 1000; // 60 seconds in milliseconds
 
     private String cookies = null;
-    private List<NameValuePair> additionalHeaderFields;
+    private HashMap<String, String> additionalHeaderFields;
 
     public HttpHelper(Context context) {
         Init(context, (long) 10); // 10 MiB
@@ -90,7 +90,7 @@ public class HttpHelper {
 
         mPrefs = context.getSharedPreferences(TAG, Context.MODE_PRIVATE);
 
-        additionalHeaderFields = new ArrayList<NameValuePair>();
+        additionalHeaderFields = new HashMap<String, String>();
     }
 
     public void setCookies(List<NameValuePair> nameValuePairs) {
@@ -106,7 +106,7 @@ public class HttpHelper {
     }
 
     public void setHeaderField(String name, String value) {
-        additionalHeaderFields.add(new BasicNameValuePair(name, value));
+        additionalHeaderFields.put(name, value);
     }
 
     public void flush() {
@@ -173,11 +173,7 @@ public class HttpHelper {
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
 
-            if (additionalHeaderFields.size() > 0) {
-                for (NameValuePair pair : additionalHeaderFields) {
-                    urlConnection.setRequestProperty(pair.getName(), pair.getValue());
-                }
-            }
+            addHeaders(urlConnection);
 
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
@@ -416,11 +412,7 @@ public class HttpHelper {
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
 
-            if (additionalHeaderFields.size() > 0) {
-                for (NameValuePair pair : additionalHeaderFields) {
-                    urlConnection.setRequestProperty(pair.getName(), pair.getValue());
-                }
-            }
+            addHeaders(urlConnection);
 
             if (cache == NO_CACHE) {
                 urlConnection.addRequestProperty("Cache-Control", "no-cache");
@@ -477,11 +469,7 @@ public class HttpHelper {
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
 
-            if (additionalHeaderFields.size() > 0) {
-                for (NameValuePair pair : additionalHeaderFields) {
-                    urlConnection.setRequestProperty(pair.getName(), pair.getValue());
-                }
-            }
+            addHeaders(urlConnection);
 
             urlConnection.addRequestProperty("Cache-Control", "no-cache");
 
@@ -634,11 +622,7 @@ public class HttpHelper {
             if (cookies != null)
                 urlConnection.setRequestProperty("Cookie", cookies);
 
-            if (additionalHeaderFields.size() > 0) {
-                for (NameValuePair pair : additionalHeaderFields) {
-                    urlConnection.setRequestProperty(pair.getName(), pair.getValue());
-                }
-            }
+            addHeaders(urlConnection);
 
             if (DEBUG_HTTP)
                 Log.d(TAG, urlConnection.getRequestProperties().toString());
@@ -730,6 +714,14 @@ public class HttpHelper {
     }
 
     /* Private helper methods */
+    private void addHeaders(HttpURLConnection urlConnection) {
+        if (!additionalHeaderFields.isEmpty()) {
+            for (String key : additionalHeaderFields.keySet()) {
+                urlConnection.setRequestProperty(key, additionalHeaderFields.get(key));
+            }
+        }
+    }
+
     private String readStream(InputStream in) {
         InputStreamReader is = null;
         BufferedReader br = null;
